@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+ xmlns:context="http://www.springframework.org/schema/context"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context
+ http://www.springframework.org/schema/context/spring-context.xsd ">
+ 
+ 
+ <!-- Tells Spring MVC to keep hibernate sessions open until web requests are complete, thereby enabling use of hibernate lazy loading -->
+<bean name="openSessionInViewInterceptor"
+ class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
+    <property name="sessionFactory">
+        <ref bean="sessionFactory"/>
+    </property>
+</bean>
+
+<!-- Tells Spring MVC to look for web request handlers (controllers) that are marked with a @Controller annotation -->
+<bean id="annotationMapper" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+    <!-- make this mapper before  other mappers -->
+    <property name="order" value="0"/>
+    <property name="interceptors">
+        <list>
+            <ref bean="openSessionInViewInterceptor"/>
+        </list>
+    </property>
+</bean>
+ 
+    <context:component-scan
+        base-package="com.flb.web" />
+         
+    <bean id="viewResolver"
+        class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass"
+            value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+    <bean name="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+    <property name="order" value="0"/>
+</bean>
+
+<bean name="jsonViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+   	<property name="order" value="0" />
+</bean>
+    
+</beans>

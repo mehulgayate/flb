@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd 
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<tx:annotation-driven />
+
+	<!-- This is the main Spring Framework configuration file. It works in conjunction 
+		with spring-mvc-servlet.xml to configure Spring-configured objects (beans). 
+		applicationContext.xml is the default file loaded by org.springframework.web.context.ContextLoaderListener. 
+		To split configuration across multiple spring files, consult web.xml -->
+
+	<!-- Load environment-specific properties such as database ports and passwords -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+
+		<!-- This setting allows us to override properties with JVM system properties 
+			OR host OS system properties -->
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+
+		<!-- Location of property file(s) -->
+		<property name="locations">
+			<list>
+				<value>
+					/WEB-INF/classes/application.properties
+				</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dataSource"
+ class="com.evalua.entity.support.DefaultMySqlDataSource">
+    <property name="url">
+        <value>
+            ${db.url}
+        </value>
+    </property>
+    <property name="username">
+        <value>${db.username}</value>
+    </property>
+    <property name="password">
+        <value>${db.password}</value>
+    </property>
+</bean>
+
+	<bean id="sessionFactory"
+		class="com.evalua.entity.support.DefaultSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+
+		<!-- Tells Hibernate where to look for annotation-marked persistent entity objects -->
+		<property name="packagesToScan" value="com.cam.entity" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">${db.hbm2ddl}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Transaction manager for a single Hibernate SessionFactory (alternative 
+		to JTA) -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="dataStoreManager"
+		class="com.evalua.entity.support.DataStoreManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>	
+</beans>
