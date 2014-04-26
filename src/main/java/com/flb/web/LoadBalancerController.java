@@ -3,9 +3,12 @@ package com.flb.web;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.evalua.entity.support.DataStoreManager;
@@ -44,6 +47,25 @@ public class LoadBalancerController {
 		
 		ServerLoad serverLoad=new ServerLoad();
 		serverLoad.setServer(server);
+		dataStoreManager.save(serverLoad);
+		
+		return mv;
+	}
+	
+	@RequestMapping("/notify/request-complete")
+	public ModelAndView notify(HttpSession httpSession, @RequestParam Long id){
+		ModelAndView mv=new ModelAndView("json-string");
+		JSONObject jsonObject=new JSONObject();
+		jsonObject.put("result", "true");
+		mv.addObject("result", jsonObject);
+
+		
+		Server server=repository.findServerById(id);
+		ServerLoad serverLoad=repository.findServerLoadByServer(server);
+		int load=serverLoad.getRequestCount();
+		load--;
+		serverLoad.setRequestCount(load);
+		System.out.println(load+"****************");
 		dataStoreManager.save(serverLoad);
 		
 		return mv;

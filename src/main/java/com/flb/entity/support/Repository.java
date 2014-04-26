@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.flb.entity.Server;
+import com.flb.entity.Server.ServerStatus;
 import com.flb.entity.ServerLoad;
 
 @Transactional
@@ -30,7 +31,21 @@ public class Repository {
 	}
 	
 	public List<ServerLoad> listMinLoadServers(){
-		return getSession().createQuery("From "+ServerLoad.class.getName()+" sl where sl.requestCount=(select min(slinnr.requestCount) FROM "+ServerLoad.class.getName()+" slinnr)").list();
+		return getSession().createQuery("From "+ServerLoad.class.getName()+" sl where sl.requestCount=(select min(slinnr.requestCount) FROM "+ServerLoad.class.getName()+" slinnr where slinnr.server.status=:status)")
+				.setParameter("status", ServerStatus.ACTIVE).list();
+	}
+	
+	public ServerLoad findServerLoadByServer(Server server) {
+		return (ServerLoad) getSession()
+				.createQuery(
+						"FROM " + ServerLoad.class.getName()
+								+ " sl where sl.server=:server")
+				.setParameter("server", server).uniqueResult();
+	}
+	
+	public Server findServerById(Long id){
+		return (Server) getSession().createQuery("From "+Server.class.getName()+" s where s.id=:id")
+				.setParameter("id", id).uniqueResult();
 	}
 
 }
