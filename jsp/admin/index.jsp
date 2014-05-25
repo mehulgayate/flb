@@ -105,9 +105,10 @@ ddaccordion.init({
             <td><c:out value="${serverLoad.server.status}"/></td>
             <td><c:out value="${serverLoad.requestCount}"/></td>
         </tr>         
-        </c:forEach>        
+        </c:forEach>                
     </tbody>
-</table>      
+</table>    
+<input type="button" id="createRequest" value="Hit New Request"></input>  
      </div><!-- end of right content-->
             
                     
@@ -128,5 +129,28 @@ ddaccordion.init({
     </div>
 
 </div>		
+
+<script type="text/javascript">
+$( document ).ready(function() {
+	$("#createRequest").click(function(){
+		$.ajax({
+			url:"/api/simple-service",
+			async:true,
+			success:function(result){
+		    
+		  }
+		
+		});		
+	
+		alert("Request hitted");
+	});
+	
+	window.setInterval(function(){
+		location.reload();
+	},5000);
+
+});
+
+</script>
 </body>
 </html>

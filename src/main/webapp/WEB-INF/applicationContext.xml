@@ -77,4 +77,7 @@
 		class="com.flb.entity.support.Repository">
 		<property name="sessionFactory" ref="sessionFactory" />		
 	</bean>
+	<bean id="clearLoadUtil" class="com.flb.entity.support.ClearLoadUtil" init-method="init">
+	     <constructor-arg ref="sessionFactory" />	      
+	</bean>	
 </beans>
