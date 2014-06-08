@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.flb.entity.GraphElement;
 import com.flb.entity.Server;
 import com.flb.entity.Server.ServerStatus;
 import com.flb.entity.ServerLoad;
@@ -46,6 +47,11 @@ public class Repository {
 	public Server findServerById(Long id){
 		return (Server) getSession().createQuery("From "+Server.class.getName()+" s where s.id=:id")
 				.setParameter("id", id).uniqueResult();
+	}
+	
+	public List<GraphElement> listGraphElementByServer(Server server){
+		return getSession().createQuery("From "+GraphElement.class.getName()+" ge where gl.server=:server")
+				.setParameter("server", server).list();
 	}
 
 }

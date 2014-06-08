@@ -97,6 +97,16 @@ ddaccordion.init({
             
         </tr>
         <tr>   	 
+        	<td>Request Capacity</td>
+            <td><input type="text" name="requestCapacity" value=""/></td>
+            
+        </tr>
+        <tr>   	 
+        	<td>Request Capacity Threshold</td>
+            <td><input type="text" name="capacityThreshold" value=""/></td>
+            
+        </tr>
+        <tr>   	 
         	<td>Status</td>
             <td><select name="status">
           		<option value="ACTIVE">Active</option>

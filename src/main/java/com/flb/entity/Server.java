@@ -15,7 +15,21 @@ public class Server extends EntityBase{
 	private String portNumber;
 	private String name;
 	private ServerStatus status;
+	private Integer requestCapacity;
+	private Integer capacityThreshold;	
 	
+	public Integer getRequestCapacity() {
+		return requestCapacity;
+	}
+	public void setRequestCapacity(Integer requestCapacity) {
+		this.requestCapacity = requestCapacity;
+	}
+	public Integer getCapacityThreshold() {
+		return capacityThreshold;
+	}
+	public void setCapacityThreshold(Integer capacityThreshold) {
+		this.capacityThreshold = capacityThreshold;
+	}
 	public ServerStatus getStatus() {
 		return status;
 	}

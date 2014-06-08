@@ -1,5 +1,7 @@
 package com.flb.web;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.evalua.entity.support.DataStoreManager;
+import com.flb.entity.GraphElement;
 import com.flb.entity.Server;
 import com.flb.entity.ServerLoad;
 import com.flb.entity.support.Repository;
@@ -64,10 +67,29 @@ public class LoadBalancerController {
 		ServerLoad serverLoad=repository.findServerLoadByServer(server);
 		int load=serverLoad.getRequestCount();
 		load--;
-		serverLoad.setRequestCount(load);
-		System.out.println(load+"****************");
+		serverLoad.setRequestCount(load);		
 		dataStoreManager.save(serverLoad);
 		
+		return mv;
+	}
+	
+	@RequestMapping("/recall-data")
+	public ModelAndView getGrapgData(@RequestParam Long id){
+		ModelAndView mv=new ModelAndView("json-string");
+		
+		Server server=repository.findServerById(id);
+		List<GraphElement> graphElements=repository.listGraphElementByServer(server);
+		int i=0;
+		JSONObject jsonObjectOuter=new JSONObject();
+		for (GraphElement graphElement : graphElements) {
+			JSONObject jsonObject=new JSONObject();
+			jsonObject.put("time", graphElement.getTime().toString());
+			jsonObject.put("load",graphElement.getLoad());
+			jsonObject.put("capacity", graphElement.getServer().getRequestCapacity());
+			jsonObjectOuter.put(i, jsonObject);
+			i++;
+		}
+		mv.addObject(jsonObjectOuter);
 		return mv;
 	}
 
