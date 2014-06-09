@@ -26,6 +26,27 @@
         </list>
     </property>
 </bean>
+<bean id="freemarkerConfig"
+ class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+    
+    <!-- Proper setting for loading templates form within the webapp -->
+    <property name="templateLoaderPath" value="/WEB-INF/jsp/"/>
+    
+    <!-- Temporary setting for seeing development changes right away without copying/building to the webapp
+    NOTE: Deprecated way.  See build script build_local.sh for a better way
+    <property name="templateLoaderPath" value="file:///bh/ws/steward-quality/src/main/webapp/WEB-INF/freemarker/"/>
+    -->
+</bean>
+
+<!-- Tells Spring MVC to use freemarker to render views -->
+<bean id="freemarkerViewResolver"
+ class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+    <property name="cache" value="true"/>
+    <property name="prefix" value=""/>
+    <property name="suffix" value=".ftl"/>
+    <property name="exposeSpringMacroHelpers" value="true"/>
+    <property name="requestContextAttribute" value="ctx"/>
+</bean>
  
     <context:component-scan
         base-package="com.flb.web" />

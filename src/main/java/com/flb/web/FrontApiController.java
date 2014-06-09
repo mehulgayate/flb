@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +18,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,7 +40,7 @@ public class FrontApiController {
 	private DataStoreManager dataStoreManager;
 
 	@RequestMapping("/api/simple-service")
-	public ModelAndView login(HttpSession httpSession,HttpServletRequest request) throws InterruptedException{
+	public ModelAndView login(HttpSession httpSession,HttpServletRequest request) throws InterruptedException, IOException{
 		ModelAndView mv=new ModelAndView("json-string");
 		JSONObject jsonObject=new JSONObject();
 		jsonObject.put("result", callBackServers(getServerString("/api/simple-service"), null));
@@ -49,34 +52,32 @@ public class FrontApiController {
 		List<ServerLoad> serverLoads = repository.listMinLoadServers();
 		ServerLoad serverLoad=serverLoads.get(0);
 		Server server=serverLoad.getServer();
-		serverLoad.setRequestCount(serverLoad.getRequestCount()+1);
+		int requestCount=serverLoad.getRequestCount();
+		serverLoad.setRequestCount(++requestCount);
+		System.out.println(serverLoad.getServer().getId()+" request count "+serverLoad.getRequestCount());
 		dataStoreManager.save(serverLoad);
 
 		System.out.println("request will be processed by sever id : ***************** "+serverLoad.getId());
 		return "http://"+server.getIp()+":"+server.getPortNumber()+relativeURL+"?id="+server.getId();
 	}
 
-	private String callBackServers(String url,Object object){		
+	private String callBackServers(String url,Object object) throws IOException{		
 		StringBuilder stringBuilder=new StringBuilder(""); 
+		CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
 		try {
+		    // Start the client
+		    httpclient.start();
 
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-			HttpGet getRequest = new HttpGet(url);
-			getRequest.addHeader("accept", "application/json");			
-
-			if(object!=null){
-				getRequest = new HttpGet(url+"?param="+object.toString());
-			}
-
-			HttpResponse response = httpClient.execute(getRequest);
-
-			if (response.getStatusLine().getStatusCode() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatusLine().getStatusCode());
-			}
+		    // Execute request
+		    final HttpGet request1 = new HttpGet(url);
+		    Future<HttpResponse> future = httpclient.execute(request1, null);
+		    // and wait until a response is received
+		    HttpResponse response1 = future.get();
+		    System.out.println(request1.getRequestLine() + "->" + response1.getStatusLine());
+	
 
 			BufferedReader br = new BufferedReader(
-					new InputStreamReader((response.getEntity().getContent())));
+					new InputStreamReader((response1.getEntity().getContent())));
 
 			String output;
 
@@ -86,7 +87,6 @@ public class FrontApiController {
 				stringBuilder.append(output);
 			}
 
-			httpClient.getConnectionManager().shutdown();
 
 		} catch (ClientProtocolException e) {
 
@@ -95,7 +95,15 @@ public class FrontApiController {
 		} catch (IOException e) {
 
 			e.printStackTrace();
-		}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+            httpclient.close();
+        }
 		return stringBuilder.toString();
 
 	}

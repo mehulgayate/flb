@@ -80,4 +80,10 @@
 	<bean id="clearLoadUtil" class="com.flb.entity.support.ClearLoadUtil" init-method="init">
 	     <constructor-arg ref="sessionFactory" />	      
 	</bean>	
+	
+	<bean id="asyncSessionMonitorDaemon" class="com.flb.demon.LoadAnalyzerDemon" init-method="init">
+	    <constructor-arg ref="sessionFactory" />
+	    <constructor-arg><value>${app.delay}</value></constructor-arg>
+	    <constructor-arg><value>${app.demonInterval}</value></constructor-arg>
+	</bean>
 </beans>

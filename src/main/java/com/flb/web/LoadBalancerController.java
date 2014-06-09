@@ -43,6 +43,13 @@ public class LoadBalancerController {
 		return mv;
 	}
 	
+	@RequestMapping("/admin/graphs")
+	public ModelAndView showGraphs(HttpSession httpSession){
+		ModelAndView mv=new ModelAndView("admin/graph");
+		mv.addObject("servers", repository.listAllServer());
+		return mv;
+	}
+	
 	@RequestMapping("/admin/add-server")
 	public ModelAndView addNewServer(HttpSession httpSession, @ModelAttribute Server server){
 		ModelAndView mv=new ModelAndView("redirect:/admin");		
@@ -73,7 +80,7 @@ public class LoadBalancerController {
 		return mv;
 	}
 	
-	@RequestMapping("/recall-data")
+	@RequestMapping("/graph-data")
 	public ModelAndView getGrapgData(@RequestParam Long id){
 		ModelAndView mv=new ModelAndView("json-string");
 		
@@ -83,8 +90,8 @@ public class LoadBalancerController {
 		JSONObject jsonObjectOuter=new JSONObject();
 		for (GraphElement graphElement : graphElements) {
 			JSONObject jsonObject=new JSONObject();
-			jsonObject.put("time", graphElement.getTime().toString());
-			jsonObject.put("load",graphElement.getLoad());
+			jsonObject.put("time", graphElement.getAnalisysTime().toString());
+			jsonObject.put("load",graphElement.getServerLoad());
 			jsonObject.put("capacity", graphElement.getServer().getRequestCapacity());
 			jsonObjectOuter.put(i, jsonObject);
 			i++;

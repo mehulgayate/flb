@@ -33,14 +33,14 @@ public class LoadAnalyzerDemon extends TimerTask{
 
 
 	public void init() {
-		logger.info("Scedulaing Buffered Thread Schudular *******");
+		logger.info("Scedulaing Load Analyzer Demon *******");
 		sessionTimer.schedule(this, initialDelay,period);
 	}
 
 	@Override
 	public void run() {
 
-		logger.info("Running Buffered Thread Schudular *******");
+		logger.info("Running Load Analyzer Demon *******");
 		Session hibernateSession=sessionFactory.openSession();
 		Transaction transaction=hibernateSession.beginTransaction();
 		
@@ -49,8 +49,8 @@ public class LoadAnalyzerDemon extends TimerTask{
 		
 		for (ServerLoad serverLoad : serverLoads) {
 			GraphElement graphElement = new GraphElement();
-			graphElement.setTime(currentTime);
-			graphElement.setLoad(serverLoad.getRequestCount());
+			graphElement.setAnalisysTime(currentTime);
+			graphElement.setServerLoad(serverLoad.getRequestCount());
 			graphElement.setServer(serverLoad.getServer());
 			hibernateSession.save(graphElement);
 		}

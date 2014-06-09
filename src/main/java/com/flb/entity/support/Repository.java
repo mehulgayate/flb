@@ -31,7 +31,12 @@ public class Repository {
 		return getSession().createQuery("From "+ServerLoad.class.getName()).list();
 	}
 	
+	public List<Server> listAllServer(){
+		return getSession().createQuery("From "+Server.class.getName()).list();
+	}
+	
 	public List<ServerLoad> listMinLoadServers(){
+		getSession().flush();
 		return getSession().createQuery("From "+ServerLoad.class.getName()+" sl where sl.requestCount=(select min(slinnr.requestCount) FROM "+ServerLoad.class.getName()+" slinnr where slinnr.server.status=:status)")
 				.setParameter("status", ServerStatus.ACTIVE).list();
 	}
@@ -50,7 +55,7 @@ public class Repository {
 	}
 	
 	public List<GraphElement> listGraphElementByServer(Server server){
-		return getSession().createQuery("From "+GraphElement.class.getName()+" ge where gl.server=:server")
+		return getSession().createQuery("FROM "+GraphElement.class.getName()+" ge where ge.server=:server")
 				.setParameter("server", server).list();
 	}
 

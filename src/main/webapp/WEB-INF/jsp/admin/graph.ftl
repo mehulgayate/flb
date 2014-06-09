@@ -10,6 +10,7 @@
 <script type="text/javascript" src="/static/js/clockh.js"></script> 
 <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/js/ddaccordion.js"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
 ddaccordion.init({
 	headerclass: "submenuheader", //Shared CSS class name of headers group
@@ -73,43 +74,11 @@ ddaccordion.init({
     <div class="right_content">            
     
     <div >    
-    <h2 style="display: inline-block; float: left;">Servers</h2><h2 style="display: inline-block; margin-left: 20px;"><a href="/admin/graphs">Graph Analysis</a></h2> <a style="display: inline-block; float: right;" href="/admin/add-new-server"><strong>+ Add new server</strong></a> 
+    <h2 style="display: inline-block; float: left;"><a href="/admin/">Servers</a></h2><h2 style="display: inline-block; margin-left: 20px;">Graph Analysis</h2> <a style="display: inline-block; float: right;" href="/admin/add-new-server"><strong>+ Add new server</strong></a> 
     </div>                
                     
-<table id="rounded-corner" summary="Blocked Users">
-    <thead>
-    	<tr>
-        	<th scope="col" class="rounded-company"></th>
-            <th scope="col" class="rounded">Name</th>
-            <th scope="col" class="rounded">IP</th>
-            <th scope="col" class="rounded">Port</th>
-            <th scope="col" class="rounded">Status</th>
-            <th scope="col" class="rounded-q4">Load</th>
-        </tr>
-    </thead>
-        <tfoot>
-    	<tr>
-        	<td colspan="5" class="rounded-foot-left"><em>Listing All Servers Above</em></td>
-        	<td class="rounded-foot-right">&nbsp;</td>
 
-        </tr>
-    </tfoot>
-    <tbody>    	
-        <c:forEach var="serverLoad" items="${serverLoads}">
-        
-        <tr>   	 
-        	<td><c:out value="${serverLoad.server.id}"/></td>
-            <td><c:out value="${serverLoad.server.name}"/></td>
-            <td><c:out value="${serverLoad.server.ip}"/></td>
-            <td><c:out value="${serverLoad.server.portNumber}"/></td>
-            <td><c:out value="${serverLoad.server.status}"/></td>
-            <td><c:out value="${serverLoad.requestCount}"/></td>
-        </tr>         
-        </c:forEach>                
-    </tbody>
-</table>    
-<input type="button" id="createRequest" value="Hit New Request"></input>  
-<input type="button" id="bulkRequests" value="Hit Bulk Request"></input>  
+
      </div><!-- end of right content-->
             
                     
@@ -119,6 +88,16 @@ ddaccordion.init({
     
     
     <div class="clear"></div>
+    <div style="text-align: center;">
+    	Select Server : <select id="server">
+    						<#list servers as server>
+    							<option value="${server.id}">${server.name}</option>
+    						</#list>
+    	
+    					</select>
+    					<button id="generateGraph">Generate Graph</button>
+    </div>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
     </div> <!--end of main content-->
 	
     
@@ -131,121 +110,66 @@ ddaccordion.init({
 
 </div>		
 
-<script type="text/javascript">
-$( document ).ready(function() {
-	$("#createRequest").click(function(){
-		$.ajax({
-			url:"/api/simple-service",
-			async:true,
-			success:function(result){
-		    
-		  }
-		
-		});		
+
+    <script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    
+    $( document ).ready(function() {
+    	$("#generateGraph").click(function(){
+    		drawChart();
+    	});
+    	
+    	
+
+    });
+    
+    function drawChart(){
+    	var dataArray=[];
+ 		var headerArray=[];
+ 		headerArray.push("Time");
+ 		headerArray.push("Load");
+ 		headerArray.push("Capacity");
+ 		dataArray.push(headerArray);	
+
+ 	  
+ 	  $.ajax({		
+ 			type : "GET",
+ 			url : "/graph-data",			
+ 			data : "id="+$("#server").val(),
+ 			dataType:"json",
+ 			success : function(data) {    				 
+				
+ 				$.each(data,function(key,value){
+ 					var innerArray=[];    	
+ 					innerArray.push(value.time);    					
+ 					innerArray.push(parseInt(value.load));
+ 					innerArray.push(parseInt(value.capacity));
+ 					dataArray.push(innerArray);
+ 				});
+ 				
+ 			//	alert(JSON.stringify(dataArray));
+ 				var data = google.visualization.arrayToDataTable(dataArray);
+
+ 		        var options = {
+ 		    			'width':900,'height':500,'vAxis': {'title': 'Load'},hAxis: {
+ 		    		        slantedText:true,
+ 		    		        slantedTextAngle:90,// here you can even use 180
+ 		    		        'title': 'Time'
+ 		    		    },title: "Server Load Analysis"
+ 		    	};
+
+ 		        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+ 		        chart.draw(data, options);
+ 			},
+ 			error : function(e) {
+ 				alert('Error while Ajax');
+ 			}		
+ 		});	
 	
-		alert("Request hitted");
-	});
-	
-	$("#bulkRequests").click(function(){		
-		for(var i=0;i<15;i++){			
-			hitBulkReq();		
-		}	
-		
-	});
-	
-	window.setInterval(function(){
-		location.reload();
-	},60000);
-
-});
-
-function hitBulkReq(){
-	$.getJSON("/api/simple-service?id=" + 1, function(data) {
-	    
-	  });
-	setTimeout(hitReq2, 1000)
-}
-
-function hitReq2(){
-	 $.getJSON("/api/simple-service?id=" + 2, function(data) {
-		    
-	  });
-	 setTimeout(hitReq3, 1000)
-}
-
-function hitReq3(){
-	 $.getJSON("/api/simple-service?id=" + 3, function(data) {
-		    
-	  });
-	 setTimeout(hitReq4, 1000)
-}
-function hitReq4(){
-	 $.getJSON("/api/simple-service?id=" + 4, function(data) {
-		    
-	  });
-	 setTimeout(hitReq5, 1000);
-}
-function hitReq5(){
-	 $.getJSON("/api/simple-service?id=" + 5, function(data) {
-		    
-	  });
-	 setTimeout(hitReq6, 1000);
-}
-function hitReq6(){
-	 $.getJSON("/api/simple-service?id=" + 6, function(data) {
-		    
-	  });
-	 setTimeout(hitReq7, 1000);
-}
-function hitReq7(){
-	 $.getJSON("/api/simple-service?id=" + 7, function(data) {
-		    
-	  });	
-	 setTimeout(hitReq8, 1000);
-}
-function hitReq8(){
-	 $.getJSON("/api/simple-service?id=" + 8, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq9, 1000);
-}
-function hitReq9(){
-	 $.getJSON("/api/simple-service?id=" + 9, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq10, 1000);
-}
-function hitReq10(){
-	 $.getJSON("/api/simple-service?id=" + 10, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq11, 1000);
-}
-function hitReq11(){
-	 $.getJSON("/api/simple-service?id=" +11, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq12, 1000);
-}
-function hitReq12(){
-	 $.getJSON("/api/simple-service?id=" + 12, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq13, 1000);
-}
-function hitReq13(){
-	 $.getJSON("/api/simple-service?id=" + 13, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq14, 1000);
-}
-function hitReq14(){
-	 $.getJSON("/api/simple-service?id=" + 14, function(data) {
-		    
-	  });	 
-	 alert("Bulk Request hitted");
-}
-
-</script>
+    }
+      
+     
+    </script>
 </body>
 </html>

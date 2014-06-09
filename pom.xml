@@ -97,13 +97,8 @@
 	<groupId>javax.servlet</groupId>
 	<artifactId>jstl</artifactId>
 	<version>1.2</version>
-  </dependency>
-  <dependency>
-		<groupId>org.apache.httpcomponents</groupId>
-		<artifactId>httpclient</artifactId>
-		<version>4.1.1</version>
-	</dependency>  
-	<dependency>
+  </dependency> 
+<dependency>
 		<groupId>org.slf4j</groupId>
       	<artifactId>slf4j-api</artifactId>
       	<version>1.5.8</version>
@@ -113,6 +108,17 @@
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.5.8</version>
     </dependency>
+    <dependency>
+	<groupId>org.apache.httpcomponents</groupId>
+	<artifactId>httpasyncclient</artifactId>
+	<version>4.0.1</version>
+</dependency>
+<dependency>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpasyncclient-cache</artifactId>
+  <version>4.0.1</version>
+</dependency>
+    
   </dependencies>
  
   

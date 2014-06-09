@@ -16,11 +16,12 @@ public class DataStoreManager {
 	public Session save(EntityBase entity){		
 		Session session=getSession();
 		session.saveOrUpdate(entity);
+		session.flush();
 		return session;
 	}
 
 	private Session getSession(){
-		return sessionFactory.openSession();
+		return sessionFactory.getCurrentSession();
 	}
 
 }
