@@ -41,6 +41,12 @@ public class Repository {
 				.setParameter("status", ServerStatus.ACTIVE).list();
 	}
 	
+	public List<ServerLoad> listMinLoadServersForMigration(Long oldServerId){		
+		return getSession().createQuery("From "+ServerLoad.class.getName()+" sl where sl.requestCount<sl.server.requestCapacity AND sl.server.id!=:serverId AND sl.server.status=:status")
+				.setParameter("status", ServerStatus.ACTIVE)
+				.setParameter("serverId", oldServerId).list();
+	}
+	
 	public ServerLoad findServerLoadByServer(Server server) {
 		return (ServerLoad) getSession()
 				.createQuery(

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -43,7 +44,8 @@ public class FrontApiController {
 	public ModelAndView login(HttpSession httpSession,HttpServletRequest request) throws InterruptedException, IOException{
 		ModelAndView mv=new ModelAndView("json-string");
 		JSONObject jsonObject=new JSONObject();
-		jsonObject.put("result", callBackServers(getServerString("/api/simple-service"), null));
+		String uuid=UUID.randomUUID().toString();
+		jsonObject.put("result", callBackServers(getServerString("/api/simple-service?uuidf="+uuid), null,"/api/simple-service?uuidf="+uuid));
 		mv.addObject("result",jsonObject); 
 		return mv; 
 	}
@@ -53,15 +55,14 @@ public class FrontApiController {
 		ServerLoad serverLoad=serverLoads.get(0);
 		Server server=serverLoad.getServer();
 		int requestCount=serverLoad.getRequestCount();
-		serverLoad.setRequestCount(++requestCount);
-		System.out.println(serverLoad.getServer().getId()+" request count "+serverLoad.getRequestCount());
+		serverLoad.setRequestCount(++requestCount);		
 		dataStoreManager.save(serverLoad);
 
-		System.out.println("request will be processed by sever id : ***************** "+serverLoad.getId());
-		return "http://"+server.getIp()+":"+server.getPortNumber()+relativeURL+"?id="+server.getId();
+		System.out.println("request will be processed by sever id : ***************** "+server.getId());
+		return "http://"+server.getIp()+":"+server.getPortNumber()+relativeURL+"&id="+server.getId();
 	}
 
-	private String callBackServers(String url,Object object) throws IOException{		
+	private String callBackServers(String url,Object object,String relativeUrl) throws IOException{		
 		StringBuilder stringBuilder=new StringBuilder(""); 
 		CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
 		try {
@@ -86,6 +87,11 @@ public class FrontApiController {
 				System.out.println(output);
 				stringBuilder.append(output);
 			}
+			
+			if(stringBuilder.toString().indexOf("migrate")>0){
+				Long oldServerId=new Long(url.split("id=")[1]);
+				return migrateRequest(oldServerId,relativeUrl,object);
+			}
 
 
 		} catch (ClientProtocolException e) {
@@ -106,5 +112,82 @@ public class FrontApiController {
         }
 		return stringBuilder.toString();
 
+	}
+	
+	private String migrateRequest(Long oldServerId,String relativeUrl,Object object) throws IOException{
+		
+		System.out.println("**** #### ***** **** #### ***** **** #### ***** Load migration detected from server : "+oldServerId);
+		
+		String url=getNewServerString(relativeUrl,oldServerId);
+		
+		if(url.equals("false")){
+			return "false";
+		}
+		
+		StringBuilder stringBuilder=new StringBuilder(""); 
+		CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+		try {
+		    // Start the client
+		    httpclient.start();
+
+		    // Execute request
+		    final HttpGet request1 = new HttpGet(url);
+		    Future<HttpResponse> future = httpclient.execute(request1, null);
+		    // and wait until a response is received
+		    HttpResponse response1 = future.get();
+		    System.out.println(request1.getRequestLine() + "->" + response1.getStatusLine());
+	
+
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader((response1.getEntity().getContent())));
+
+			String output;
+
+			System.out.println("Migration Output from Server for UUIDF : "+relativeUrl);
+			while ((output = br.readLine()) != null) {
+				System.out.println(output);
+				stringBuilder.append(output);
+			}
+			
+			if(stringBuilder.toString().indexOf("migrate")>0){
+				Long olderServerId=new Long(url.split("id=")[1]);
+				migrateRequest(olderServerId,relativeUrl,object);
+			}
+
+
+		} catch (ClientProtocolException e) {
+
+			e.printStackTrace();
+
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+            httpclient.close();
+        }
+		return stringBuilder.toString();
+	}
+	
+	
+	private String getNewServerString(String relativeURL,Long oldServerId){
+		List<ServerLoad> serverLoads = repository.listMinLoadServersForMigration(oldServerId);
+		if(serverLoads.isEmpty()){
+			System.out.println("########### ALL SERVERS ARE OVERLOADED .....UNABLE TO SERVE AT CURRENT MOMENT...!!!!!");
+			return "false";
+		}
+		ServerLoad serverLoad=serverLoads.get(0);
+		Server server=serverLoad.getServer();
+		int requestCount=serverLoad.getRequestCount();
+		serverLoad.setRequestCount(++requestCount);		
+		dataStoreManager.save(serverLoad);
+
+		System.out.println("Sever id: "+oldServerId+" has migrated request to server ID: ***************** "+server.getId());
+		return "http://"+server.getIp()+":"+server.getPortNumber()+relativeURL+"&id="+server.getId();
 	}
 }

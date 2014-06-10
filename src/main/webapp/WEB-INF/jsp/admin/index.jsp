@@ -85,6 +85,8 @@ ddaccordion.init({
             <th scope="col" class="rounded">Port</th>
             <th scope="col" class="rounded">Status</th>
             <th scope="col" class="rounded-q4">Load</th>
+            <th scope="col" class="rounded-q4">Load Capacity</th>
+            <th scope="col" class="rounded-q4">Capacity Threshold</th>
         </tr>
     </thead>
         <tfoot>
@@ -102,8 +104,10 @@ ddaccordion.init({
             <td><c:out value="${serverLoad.server.name}"/></td>
             <td><c:out value="${serverLoad.server.ip}"/></td>
             <td><c:out value="${serverLoad.server.portNumber}"/></td>
-            <td><c:out value="${serverLoad.server.status}"/></td>
+            <td><c:out value="${serverLoad.server.status}"/></td>            
             <td><c:out value="${serverLoad.requestCount}"/></td>
+            <td><c:out value="${serverLoad.server.requestCapacity}"/></td>
+            <td><c:out value="${serverLoad.server.capacityThreshold}"/></td>
         </tr>         
         </c:forEach>                
     </tbody>
@@ -147,9 +151,9 @@ $( document ).ready(function() {
 	});
 	
 	$("#bulkRequests").click(function(){		
-		for(var i=0;i<15;i++){			
+					
 			hitBulkReq();		
-		}	
+			
 		
 	});
 	
