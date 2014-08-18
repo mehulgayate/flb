@@ -19,7 +19,18 @@ public class RequestGenerator {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	public static void main(String[] args) throws IOException, InterruptedException {
+	
+	private Integer delay;
+	
+	public Integer getDelay() {
+		return delay;
+	}
+
+	public void setDelay(Integer delay) {
+		this.delay = delay;
+	}
+
+	public void main() throws IOException, InterruptedException {
 		
 		int i=1;
 		
@@ -27,14 +38,14 @@ public class RequestGenerator {
 			System.out.println("Creatting req num "+i);
 			createRequest(i);
 			if(i%30==0){
-				Thread.currentThread().sleep(120000);
+				Thread.currentThread().sleep(delay);
 			}
 			i++;
 		}
 
 	}
 	
-	private static String createRequest(Integer id) throws IOException{
+	private String createRequest(Integer id) throws IOException{
 		CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
 		StringBuilder stringBuilder=new StringBuilder("");
 		String url="http://localhost:8080/api/simple-service?id="+id;

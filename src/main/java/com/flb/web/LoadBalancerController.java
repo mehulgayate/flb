@@ -30,6 +30,9 @@ public class LoadBalancerController {
 	@Resource
 	private Repository repository;
 	
+	@Resource
+	private RequestGenerator requestGenerator;
+	
 	@RequestMapping("/admin")
 	public ModelAndView login(HttpSession httpSession){
 		ModelAndView mv=new ModelAndView("admin/index");
@@ -106,7 +109,7 @@ public class LoadBalancerController {
 	public ModelAndView createLoad() throws IOException, InterruptedException{
 		ModelAndView mv=new ModelAndView("json-string");
 		
-		RequestGenerator.main(null);
+		requestGenerator.main();
 		
 		JSONObject jsonObject=new JSONObject();
 		jsonObject.put("Created", "true");

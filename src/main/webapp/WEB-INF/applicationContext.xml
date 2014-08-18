@@ -86,4 +86,10 @@
 	    <constructor-arg><value>${app.delay}</value></constructor-arg>
 	    <constructor-arg><value>${app.demonInterval}</value></constructor-arg>
 	</bean>
+	
+	<bean id="requestGenerator" class="com.evalua.util.RequestGenerator" >
+	    <property name="delay">
+	        <value>${app.request.delay}</value>
+	     </property>   
+	</bean>
 </beans>
