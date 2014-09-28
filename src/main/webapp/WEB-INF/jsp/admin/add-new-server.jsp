@@ -114,6 +114,14 @@ ddaccordion.init({
           		<option value="SUSPENDED">Suspended</option>
           	</select></td>
             
+        </tr>
+        <tr>   	 
+        	<td>Request Migration</td>
+            <td><select name="migrationActive">
+          		<option value="true">Active</option>
+          		<option value="false">Inactive</option>          		
+          	</select></td>
+            
         </tr>  
         <tr>   	 
         	<td><input type="submit" value="ADD"/></td>           

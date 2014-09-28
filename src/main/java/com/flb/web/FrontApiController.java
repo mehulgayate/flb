@@ -118,6 +118,14 @@ public class FrontApiController {
 		
 		System.out.println("**** #### ***** **** #### ***** **** #### ***** Load migration detected from server : "+oldServerId);
 		
+		Server server=repository.findServerById(oldServerId);
+		
+		int requestMig=server.getRequestMigrated();
+		System.out.println("Migrated request numbers "+requestMig);
+		server.setRequestMigrated(++requestMig);
+		dataStoreManager.save(server);
+		
+		
 		String url=getNewServerString(relativeUrl,oldServerId);
 		
 		if(url.equals("false")){

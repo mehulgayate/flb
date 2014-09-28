@@ -17,7 +17,21 @@ public class Server extends EntityBase{
 	private ServerStatus status;
 	private Integer requestCapacity;
 	private Integer capacityThreshold;	
+	private boolean migrationActive;
+	private Integer requestMigrated=0;	
 	
+	public Integer getRequestMigrated() {
+		return requestMigrated;
+	}
+	public void setRequestMigrated(Integer requestMigrated) {
+		this.requestMigrated = requestMigrated;
+	}
+	public boolean isMigrationActive() {
+		return migrationActive;
+	}
+	public void setMigrationActive(boolean migrationActive) {
+		this.migrationActive = migrationActive;
+	}
 	public Integer getRequestCapacity() {
 		return requestCapacity;
 	}

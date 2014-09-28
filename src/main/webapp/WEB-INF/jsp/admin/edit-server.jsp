@@ -73,50 +73,65 @@ ddaccordion.init({
     <div class="right_content">            
     
     <div >    
-    <h2 style="display: inline-block; float: left;">Servers</h2><h2 style="display: inline-block; margin-left: 20px;"><a href="/admin/graphs">Graph Analysis</a></h2> <a style="display: inline-block; float: right;" href="/admin/add-new-server"><strong>+ Add new server</strong></a> 
+    <h2 style="display: inline-block; float: left;">Add New Server</h2> <a style="display: inline-block; float: right;" href="admin/add-new-server"></a> 
     </div>                
-                    
-<table id="rounded-corner" summary="Blocked Users">
-    <thead>
-    	<tr>
-        	<th scope="col" class="rounded-company"></th>
-            <th scope="col" class="rounded">Name</th>
-            <th scope="col" class="rounded">IP</th>
-            <th scope="col" class="rounded">Port</th>
-            <th scope="col" class="rounded">Status</th>
-            <th scope="col" class="rounded-q4">Load</th>
-            <th scope="col" class="rounded-q4">Load Capacity</th>
-            <th scope="col" class="rounded-q4">Capacity Threshold</th>
-            <th scope="col" class="rounded-q4">Migration</th>
-        </tr>
-    </thead>
-        <tfoot>
-    	<tr>
-        	<td colspan="5" class="rounded-foot-left"><em>Listing All Servers Above</em></td>
-        	<td class="rounded-foot-right">&nbsp;</td>
-
-        </tr>
-    </tfoot>
-    <tbody>    	
-        <c:forEach var="serverLoad" items="${serverLoads}">
-        
+    
+    
+    <form action="/admin/update-server">
+    <table id="rounded-corner" summary="Blocked Users">
+    
+    <tbody>        
         <tr>   	 
-        	<td><c:out value="${serverLoad.server.id}"/></td>
-            <td><c:out value="${serverLoad.server.name}"/></td>
-            <td><c:out value="${serverLoad.server.ip}"/></td>
-            <td><c:out value="${serverLoad.server.portNumber}"/></td>
-            <td><c:out value="${serverLoad.server.status}"/></td>            
-            <td><c:out value="${serverLoad.requestCount}"/></td>
-            <td><c:out value="${serverLoad.server.requestCapacity}"/></td>
-            <td><c:out value="${serverLoad.server.capacityThreshold}"/></td>
-            <td><c:out value="${serverLoad.server.migrationActive}"/></td>
-            <td><a href="/admin/edit-server?id=${serverLoad.server.id}"/>Edit</a></td>
+        	<td>Name</td>
+            <td><input type="text" name="name" value="${server.name}"/></td>
+            
+        </tr>
+        <tr>   	 
+        	<td>IP Address</td>
+            <td><input type="text" name="ip" value="${server.ip}"/></td>
+            
+        </tr>
+        <tr>   	 
+        	<td>Port Number</td>
+            <td><input type="text" name="portNumber" value="${server.portNumber}"/></td>
+            
+        </tr>
+        <tr>   	 
+        	<td>Request Capacity</td>
+            <td><input type="text" name="requestCapacity" value="${server.requestCapacity}"/></td>
+            
+        </tr>
+        <tr>   	 
+        	<td>Request Capacity Threshold</td>
+            <td><input type="text" name="capacityThreshold" value="${server.capacityThreshold}"/></td>
+            
+        </tr>
+        <tr>   	 
+        	<td>Status</td>
+            <td><select name="status">
+          		<option value="ACTIVE">Active</option>
+          		<option value="INACTIVE">Inactive</option>
+          		<option value="SUSPENDED">Suspended</option>
+          	</select></td>
+            
+        </tr>
+        <tr>   	 
+        	<td>Request Migration</td>
+            <td><select name="migrationActive">
+          		<option value="true">Active</option>
+          		<option value="false">Inactive</option>          		
+          	</select></td>
+            
+        </tr>  
+        <tr>   	
+        	<td><input type="hidden" name="id" value="${server.id}"/>
+        	<input type="submit" value="update"/></td>           
         </tr>         
-        </c:forEach>                
+         
     </tbody>
-</table>    
-<input type="button" id="createRequest" value="Hit New Request"></input>  
-<input type="button" id="bulkRequests" value="Hit Bulk Request"></input>  
+</table>
+</form>   	
+          	
      </div><!-- end of right content-->
             
                     
@@ -137,122 +152,5 @@ ddaccordion.init({
     </div>
 
 </div>		
-
-<script type="text/javascript">
-$( document ).ready(function() {
-	$("#createRequest").click(function(){
-		$.ajax({
-			url:"/api/simple-service",
-			async:true,
-			success:function(result){
-		    
-		  }
-		
-		});		
-	
-		alert("Request hitted");
-	});
-	
-	$("#bulkRequests").click(function(){		
-					
-			hitBulkReq();		
-			
-		
-	});
-	
-	window.setInterval(function(){
-		location.reload();
-	},60000);
-
-});
-
-function hitBulkReq(){
-	$.getJSON("/api/simple-service?id=" + 1, function(data) {
-	    
-	  });
-	setTimeout(hitReq2, 1000)
-}
-
-function hitReq2(){
-	 $.getJSON("/api/simple-service?id=" + 2, function(data) {
-		    
-	  });
-	 setTimeout(hitReq3, 1000)
-}
-
-function hitReq3(){
-	 $.getJSON("/api/simple-service?id=" + 3, function(data) {
-		    
-	  });
-	 setTimeout(hitReq4, 1000)
-}
-function hitReq4(){
-	 $.getJSON("/api/simple-service?id=" + 4, function(data) {
-		    
-	  });
-	 setTimeout(hitReq5, 1000);
-}
-function hitReq5(){
-	 $.getJSON("/api/simple-service?id=" + 5, function(data) {
-		    
-	  });
-	 setTimeout(hitReq6, 1000);
-}
-function hitReq6(){
-	 $.getJSON("/api/simple-service?id=" + 6, function(data) {
-		    
-	  });
-	 setTimeout(hitReq7, 1000);
-}
-function hitReq7(){
-	 $.getJSON("/api/simple-service?id=" + 7, function(data) {
-		    
-	  });	
-	 setTimeout(hitReq8, 1000);
-}
-function hitReq8(){
-	 $.getJSON("/api/simple-service?id=" + 8, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq9, 1000);
-}
-function hitReq9(){
-	 $.getJSON("/api/simple-service?id=" + 9, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq10, 1000);
-}
-function hitReq10(){
-	 $.getJSON("/api/simple-service?id=" + 10, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq11, 1000);
-}
-function hitReq11(){
-	 $.getJSON("/api/simple-service?id=" +11, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq12, 1000);
-}
-function hitReq12(){
-	 $.getJSON("/api/simple-service?id=" + 12, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq13, 1000);
-}
-function hitReq13(){
-	 $.getJSON("/api/simple-service?id=" + 13, function(data) {
-		    
-	  });	 
-	 setTimeout(hitReq14, 1000);
-}
-function hitReq14(){
-	 $.getJSON("/api/simple-service?id=" + 14, function(data) {
-		    
-	  });	 
-	 alert("Bulk Request hitted");
-}
-
-</script>
 </body>
 </html>

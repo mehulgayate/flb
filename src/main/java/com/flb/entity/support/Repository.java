@@ -60,9 +60,10 @@ public class Repository {
 				.setParameter("id", id).uniqueResult();
 	}
 	
-	public List<GraphElement> listGraphElementByServer(Server server){
-		return getSession().createQuery("FROM "+GraphElement.class.getName()+" ge where ge.server=:server")
-				.setParameter("server", server).list();
+	public List<GraphElement> listGraphElementByServer(Server server,boolean migrationStatus){
+		return getSession().createQuery("FROM "+GraphElement.class.getName()+" ge where ge.server=:server AND migrationActive=:migrationActive")
+				.setParameter("server", server)
+				.setParameter("migrationActive", migrationStatus).list();
 	}
 
 }

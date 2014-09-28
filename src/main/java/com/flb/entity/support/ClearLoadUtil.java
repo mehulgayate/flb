@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import com.flb.entity.Server;
 import com.flb.entity.ServerLoad;
 
 public class ClearLoadUtil {
@@ -20,7 +21,11 @@ public class ClearLoadUtil {
 		
 		for (ServerLoad serverLoad : serverLoads) {
 			serverLoad.setRequestCount(0);
-			session.saveOrUpdate(serverLoad);			
+			session.saveOrUpdate(serverLoad);
+			Server server=serverLoad.getServer();
+			server.setRequestMigrated(0);
+			session.saveOrUpdate(server);
+			
 		}
 		transaction.commit();
 		session.close();

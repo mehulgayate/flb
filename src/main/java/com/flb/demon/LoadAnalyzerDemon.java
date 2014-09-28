@@ -52,6 +52,7 @@ public class LoadAnalyzerDemon extends TimerTask{
 			graphElement.setAnalisysTime(currentTime);
 			graphElement.setServerLoad(serverLoad.getRequestCount());
 			graphElement.setServer(serverLoad.getServer());
+			graphElement.setMigrationActive(serverLoad.getServer().isMigrationActive());
 			hibernateSession.save(graphElement);
 		}
 		

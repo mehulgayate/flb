@@ -43,6 +43,15 @@ public class LoadBalancerController {
 		return mv;
 	}
 	
+	@RequestMapping("/admin/edit-server")
+	public ModelAndView showeEditNew(HttpSession httpSession,@RequestParam Long id){
+		ModelAndView mv=new ModelAndView("admin/edit-server");
+		Server server=repository.findServerById(id);
+		mv.addObject("server", server);
+		
+		return mv;
+	}
+	
 	@RequestMapping("/admin/graphs")
 	public ModelAndView showGraphs(HttpSession httpSession){
 		ModelAndView mv=new ModelAndView("admin/graph");
@@ -58,6 +67,22 @@ public class LoadBalancerController {
 		ServerLoad serverLoad=new ServerLoad();
 		serverLoad.setServer(server);
 		dataStoreManager.save(serverLoad);
+		
+		return mv;
+	}
+	
+	@RequestMapping("/admin/update-server")
+	public ModelAndView editServer(HttpSession httpSession, @ModelAttribute Server server){
+		ModelAndView mv=new ModelAndView("redirect:/admin");
+		Server toUpdateServer=repository.findServerById(server.getId());
+		toUpdateServer.setCapacityThreshold(server.getCapacityThreshold());
+		toUpdateServer.setIp(server.getIp());
+		toUpdateServer.setMigrationActive(server.isMigrationActive());
+		toUpdateServer.setName(server.getName());
+		toUpdateServer.setPortNumber(server.getPortNumber());
+		toUpdateServer.setRequestCapacity(server.getRequestCapacity());
+		toUpdateServer.setStatus(server.getStatus());
+		dataStoreManager.save(toUpdateServer);		
 		
 		return mv;
 	}
@@ -85,7 +110,8 @@ public class LoadBalancerController {
 		ModelAndView mv=new ModelAndView("json-string");
 		
 		Server server=repository.findServerById(id);
-		List<GraphElement> graphElements=repository.listGraphElementByServer(server);
+		JSONObject mainObject=new JSONObject();
+		List<GraphElement> graphElements=repository.listGraphElementByServer(server,true);
 		int i=0;
 		JSONObject jsonObjectOuter=new JSONObject();
 		for (GraphElement graphElement : graphElements) {
@@ -96,7 +122,36 @@ public class LoadBalancerController {
 			jsonObjectOuter.put(i, jsonObject);
 			i++;
 		}
-		mv.addObject(jsonObjectOuter);
+		mainObject.put("migrationActive", jsonObjectOuter);
+		graphElements=repository.listGraphElementByServer(server,false);
+		i=0;
+		
+		jsonObjectOuter=new JSONObject();
+		for (GraphElement graphElement : graphElements) {
+			JSONObject jsonObject=new JSONObject();
+			jsonObject.put("time", graphElement.getAnalisysTime().toString());
+			jsonObject.put("load",graphElement.getServerLoad());
+			jsonObject.put("capacity", graphElement.getServer().getRequestCapacity());
+			jsonObjectOuter.put(i, jsonObject);
+			i++;
+		}
+		mainObject.put("migrationDeactive", jsonObjectOuter);
+		
+		
+		List<Server> servers=repository.listAllServer();
+		
+		jsonObjectOuter=new JSONObject();
+		i=0;
+		for (Server server2 : servers) {
+			JSONObject jsonObject=new JSONObject();
+			jsonObject.put("name", server2.getName());
+			jsonObject.put("requests", server2.getRequestMigrated());
+			jsonObjectOuter.put(i,jsonObject);
+			i++;
+		}
+		
+		mainObject.put("migration", jsonObjectOuter);
+		mv.addObject(mainObject);
 		return mv;
 	}
 

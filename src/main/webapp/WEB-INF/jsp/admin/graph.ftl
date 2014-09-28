@@ -89,6 +89,13 @@ ddaccordion.init({
     
     <div class="clear"></div>
     <div style="text-align: center;">
+    <br/>
+    <br/>
+    <div><strong>Migrated Requests from servers</strong></div>
+    <div id="chart_div3" style="width: 900px; height: 500px;"></div>
+    
+    <br/>
+    <br/>
     	Select Server : <select id="server">
     						<#list servers as server>
     							<option value="${server.id}">${server.name}</option>
@@ -97,7 +104,13 @@ ddaccordion.init({
     					</select>
     					<button id="generateGraph">Generate Graph</button>
     </div>
+    <br/>
+    <div><strong>Analysis while system is activated</strong></div>
     <div id="chart_div" style="width: 900px; height: 500px;"></div>
+    <br/>
+    <br/>
+    <div><strong>Analysis while system is NOT activated</strong></div>
+    <div id="chart_div2" style="width: 900px; height: 500px;"></div>
     </div> <!--end of main content-->
 	
     
@@ -132,6 +145,22 @@ ddaccordion.init({
  		headerArray.push("Capacity");
  		dataArray.push(headerArray);	
 
+ 		
+ 		var dataArray2=[];
+ 		var headerArray2=[];
+ 		headerArray2.push("Time");
+ 		headerArray2.push("Load");
+ 		headerArray2.push("Capacity");
+ 		dataArray2.push(headerArray2);
+ 		
+ 		var dataArray3=[];
+ 		var headerArray3=[];
+ 		headerArray3.push("Server");
+ 		headerArray3.push("Migrated Requests");
+ 		
+ 		
+ 		dataArray3.push(headerArray3);
+
  	  
  	  $.ajax({		
  			type : "GET",
@@ -140,7 +169,7 @@ ddaccordion.init({
  			dataType:"json",
  			success : function(data) {    				 
 				
- 				$.each(data,function(key,value){
+ 				$.each(data.migrationActive,function(key,value){
  					var innerArray=[];    	
  					innerArray.push(value.time);    					
  					innerArray.push(parseInt(value.load));
@@ -148,8 +177,28 @@ ddaccordion.init({
  					dataArray.push(innerArray);
  				});
  				
+ 				$.each(data.migrationDeactive,function(key,value){
+ 					var innerArray2=[];    	
+ 					innerArray2.push(value.time);    					
+ 					innerArray2.push(parseInt(value.load));
+ 					innerArray2.push(parseInt(value.capacity));
+ 					dataArray2.push(innerArray2);
+ 				});
+ 				
+ 				$.each(data.migration,function(key,value){
+ 					var innerArray3=[];    	
+ 					innerArray3.push(value.name);    					
+ 					innerArray3.push(parseInt(value.requests));
+ 		    			
+ 					
+ 					
+ 					dataArray3.push(innerArray3);
+ 				});
+ 				
  			//	alert(JSON.stringify(dataArray));
  				var data = google.visualization.arrayToDataTable(dataArray);
+ 				var data2 = google.visualization.arrayToDataTable(dataArray2);
+ 				var data3 = google.visualization.arrayToDataTable(dataArray3);
 
  		        var options = {
  		    			'width':900,'height':500,'vAxis': {'title': 'Load'},hAxis: {
@@ -158,9 +207,23 @@ ddaccordion.init({
  		    		        'title': 'Time'
  		    		    },title: "Server Load Analysis"
  		    	};
+ 		        
+ 		        
+ 		       var options = {
+ 		              title: 'Migrated Requests',
+ 		              vAxis: {title: 'Requests',  titleTextStyle: {color: 'green'}}
+ 		            };
+
+ 		            var chart3 = new google.visualization.ColumnChart(document.getElementById('chart_div3'));
+ 		            chart3.draw(data3, options);
+ 		        
+ 		       
 
  		        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
  		        chart.draw(data, options);
+ 		        
+ 		       var chart2 = new google.visualization.LineChart(document.getElementById('chart_div2'));
+		        chart2.draw(data2, options);
  			},
  			error : function(e) {
  				alert('Error while Ajax');

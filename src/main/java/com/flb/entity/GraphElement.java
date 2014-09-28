@@ -15,8 +15,14 @@ public class GraphElement extends EntityBase{
 	private Date analisysTime;
 	private Integer serverLoad;
 	private Server server;
+	private boolean migrationActive;	
 	
-	
+	public boolean isMigrationActive() {
+		return migrationActive;
+	}
+	public void setMigrationActive(boolean migrationActive) {
+		this.migrationActive = migrationActive;
+	}
 	public Date getAnalisysTime() {
 		return analisysTime;
 	}
