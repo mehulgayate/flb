@@ -1,5 +1,6 @@
 package com.flb.web;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.evalua.entity.support.DataStoreManager;
+import com.evalua.util.RequestGenerator;
 import com.flb.entity.GraphElement;
 import com.flb.entity.Server;
 import com.flb.entity.ServerLoad;
@@ -27,6 +29,9 @@ public class LoadBalancerController {
 	
 	@Resource
 	private Repository repository;
+	
+	@Resource
+	private RequestGenerator requestGenerator;
 	
 	@RequestMapping("/admin")
 	public ModelAndView login(HttpSession httpSession){
@@ -152,6 +157,18 @@ public class LoadBalancerController {
 		
 		mainObject.put("migration", jsonObjectOuter);
 		mv.addObject(mainObject);
+		return mv;
+	}
+	
+	@RequestMapping("/create-load")
+	public ModelAndView createLoad() throws IOException, InterruptedException{
+		ModelAndView mv=new ModelAndView("json-string");
+		
+		requestGenerator.main();
+		
+		JSONObject jsonObject=new JSONObject();
+		jsonObject.put("Created", "true");
+		mv.addObject("load", jsonObject);
 		return mv;
 	}
 
