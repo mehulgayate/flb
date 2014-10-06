@@ -162,13 +162,9 @@ public class LoadBalancerController {
 	
 	@RequestMapping("/create-load")
 	public ModelAndView createLoad() throws IOException, InterruptedException{
-		ModelAndView mv=new ModelAndView("json-string");
+		ModelAndView mv=new ModelAndView("admin/create-load");	
 		
-		requestGenerator.main();
 		
-		JSONObject jsonObject=new JSONObject();
-		jsonObject.put("Created", "true");
-		mv.addObject("load", jsonObject);
 		return mv;
 	}
 

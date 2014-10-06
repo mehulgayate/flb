@@ -87,125 +87,198 @@ var requestCount=0;
 
 $( document ).ready(function() {
 	$("#createRequest").click(function(){
+		$.ajax({
+			url:"/api/simple-service",
+			async:true,
+			success:function(result){
+		    
+		  }
 		
+		});		
 	
+		alert("Request hitted");
 	});
 	
 	$("#bulkRequests").click(function(){		
 					
+			hitBulkReq();		
+			
 		
-		hitRequests();
-		
-		
-		
-	});
+	});	
 
 });
 
-
-//Create the XHR object.
-function createCORSRequest(method, url) {
-  var xhr = new XMLHttpRequest();
-  if ("withCredentials" in xhr) {
-    // XHR for Chrome/Firefox/Opera/Safari.
-    xhr.open(method, url, true);
-  } else if (typeof XDomainRequest != "undefined") {
-    // XDomainRequest for IE.
-    xhr = new XDomainRequest();
-    xhr.open(method, url);
-  } else {
-    // CORS not supported.
-    xhr = null;
-  }
-  return xhr;
-}
-
-// Helper method to parse the title tag from the response.
-function getTitle(text) {
-  return text.match('<title>(.*)?</title>')[1];
-}
-
-// Make the actual CORS request.
-function makeCorsRequest() {
-  // All HTML5 Rocks properties support CORS.
-  var url = '/api/simple-service?id=' + requestCount;
-
-  var xhr = createCORSRequest('GET', url);
-  if (!xhr) {
-    alert('CORS not supported');
-    return;
-  }
-
-  // Response handlers.
-  xhr.onload = function() {
-    var text = xhr.responseText;
-    var title = getTitle(text);
-    alert('Response from CORS request to ' + url + ': ' + title);
-  };
-
-  xhr.onerror = function() {
-    alert('Woops, there was an error making the request.');
-  };
-
-  xhr.send();
-  
-  
-  
-}
-
-function hit(){
+function hitBulkReq(){
 	
-	makeCorsRequest();
+	$.ajax({
+		url:"/api/simple-service?id=1",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
 	
-	if(requestCount % 15 == 0){
-		setTimeout(makeCorsRequest, 60000);
-	}else{
-		alert("setting time out");
-		setTimeout(makeCorsRequest, 1000);	
-	}
-  
-  requestCount++;
+	});	
+	setTimeout(hitReq2, 1000)
 }
 
-function hitRequests(){
-	requestCount++;
+function hitReq2(){
+	$.ajax({
+		url:"/api/simple-service?id=2",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
 	
-	 $.ajax({url:"/api/simple-service?id=" + requestCount,success:function(result,xhr,textStatus){
-		    aler(JSON.stringZfy(xhr));
-		  },
-		  
-		  complete:function(xhr,textStatus){
-			  aler(JSON.stringZfy(xhr));
-			  if (xhr.status == 302) {
-			      location.href = xhr.getResponseHeader("Location");
-			      $.getJSON(xhr.getResponseHeader("Location"), function(data) {
-			  		
-					   
-				  });
-			   }
-		  },
-		  statusCode:{
-			  302 : function(xhr,textStatus){
-				  alert(xhr.status);
-				  if (xhr.status == 302) {
-				      location.href = xhr.getResponseHeader("Location");
-				      $.getJSON(xhr.getResponseHeader("Location"), function(data) {
-				  		
-						   
-					  });
-				   }
-			  }
-		  }
-	 
-	 });
-	
-	if(requestCount % 15 == 0){
-		setTimeout(hitRequests, 60000);
-	}else{
-		setTimeout(hitRequests, 1000);	
-	}
+	});	
+	 setTimeout(hitReq3, 1000)
 }
 
+function hitReq3(){
+	$.ajax({
+		url:"/api/simple-service?id=3",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});	
+	 setTimeout(hitReq4, 1000)
+}
+function hitReq4(){
+	$.ajax({
+		url:"/api/simple-service?id=4",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});	
+	 setTimeout(hitReq5, 1000);
+}
+function hitReq5(){
+	$.ajax({
+		url:"/api/simple-service?id=5",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});	
+	 setTimeout(hitReq6, 1000);
+}
+function hitReq6(){
+	$.ajax({
+		url:"/api/simple-service?id=6",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});	
+	 setTimeout(hitReq7, 1000);
+}
+function hitReq7(){
+	$.ajax({
+		url:"/api/simple-service?id=7",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});	
+	 setTimeout(hitReq8, 1000);
+}
+function hitReq8(){
+	$.ajax({
+		url:"/api/simple-service?id=8",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});		 
+	 setTimeout(hitReq9, 1000);
+}
+function hitReq9(){
+	$.ajax({
+		url:"/api/simple-service?id=9",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});		 
+	 setTimeout(hitReq10, 1000);
+}
+function hitReq10(){
+	$.ajax({
+		url:"/api/simple-service?id=10",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});		 
+	 setTimeout(hitReq11, 1000);
+}
+function hitReq11(){
+	$.ajax({
+		url:"/api/simple-service?id=11",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});		 
+	 setTimeout(hitReq12, 1000);
+}
+function hitReq12(){
+	$.ajax({
+		url:"/api/simple-service?id=12",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});		 
+	 setTimeout(hitReq13, 1000);
+}
+function hitReq13(){
+	$.ajax({
+		url:"/api/simple-service?id=13",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});		 
+	 setTimeout(hitReq14, 1000);
+}
+function hitReq14(){
+	$.ajax({
+		url:"/api/simple-service?id=14",
+		async:true,
+		timeout: 2000,
+		success:function(result){
+	    
+	  }
+	
+	});		 
+	 setTimeout(hitBulkReq, 30000);
+}
 
 </script>
 </body>
