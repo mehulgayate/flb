@@ -55,7 +55,8 @@ public class FrontApiController {
 		ServerLoad serverLoad=serverLoads.get(0);
 		Server server=serverLoad.getServer();
 		int requestCount=serverLoad.getRequestCount();
-		serverLoad.setRequestCount(++requestCount);		
+		requestCount++;
+		serverLoad.setRequestCount(requestCount);		
 		dataStoreManager.save(serverLoad);
 
 		System.out.println("request will be processed by sever id : ***************** "+server.getId());
@@ -192,7 +193,8 @@ public class FrontApiController {
 		ServerLoad serverLoad=serverLoads.get(0);
 		Server server=serverLoad.getServer();
 		int requestCount=serverLoad.getRequestCount();
-		serverLoad.setRequestCount(++requestCount);		
+		requestCount++;
+		serverLoad.setRequestCount(requestCount);		
 		dataStoreManager.save(serverLoad);
 
 		System.out.println("Sever id: "+oldServerId+" has migrated request to server ID: ***************** "+server.getId());
