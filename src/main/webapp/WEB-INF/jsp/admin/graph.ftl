@@ -111,6 +111,10 @@ ddaccordion.init({
     <br/>
     <div><strong>Analysis while system is NOT activated</strong></div>
     <div id="chart_div2" style="width: 900px; height: 500px;"></div>
+    <br/>
+    <br/>
+    <div><strong>Total requests vs Migrated requests</strong></div>
+    <div id="chart_div4" style="width: 900px; height: 500px;"></div>
     </div> <!--end of main content-->
 	
     
@@ -160,7 +164,18 @@ ddaccordion.init({
  		
  		
  		dataArray3.push(headerArray3);
+ 		
+ 		
+ 		var dataArray4=[];
+ 		var headerArray4=[];
+ 		headerArray4.push("Total / Migrated");
+ 		headerArray4.push("Requests");
+ 		
+ 		
+ 		dataArray4.push(headerArray4);
 
+ 		
+ 		
  	  
  	  $.ajax({		
  			type : "GET",
@@ -195,10 +210,23 @@ ddaccordion.init({
  					dataArray3.push(innerArray3);
  				});
  				
+ 				
+ 				var innerArray4=[];    	
+					innerArray4.push("Total requests");    					
+					innerArray4.push(parseInt(data.totalAndMigrated.total));					
+					dataArray4.push(innerArray4);
+					
+					innerArray4=[];    	
+					innerArray4.push("Migrated requests");    					
+					innerArray4.push(parseInt(data.totalAndMigrated.migrated));
+					dataArray4.push(innerArray4);
+ 				
+ 				
  			//	alert(JSON.stringify(dataArray));
  				var data = google.visualization.arrayToDataTable(dataArray);
  				var data2 = google.visualization.arrayToDataTable(dataArray2);
  				var data3 = google.visualization.arrayToDataTable(dataArray3);
+ 				var data4 = google.visualization.arrayToDataTable(dataArray4);
 
  		        var options = {
  		    			'width':900,'height':500,'vAxis': {'title': 'Load'},hAxis: {
@@ -213,6 +241,11 @@ ddaccordion.init({
  		              title: 'Migrated Requests',
  		              vAxis: {title: 'Requests',  titleTextStyle: {color: 'green'}}
  		            };
+ 		       
+ 		      var options4 = {
+ 		              title: 'Total requests vs Migrated requests',
+ 		              vAxis: {title: 'Requests',  titleTextStyle: {color: 'green'}}
+ 		            };
 
  		            var chart3 = new google.visualization.ColumnChart(document.getElementById('chart_div3'));
  		            chart3.draw(data3, options);
@@ -224,6 +257,10 @@ ddaccordion.init({
  		        
  		       var chart2 = new google.visualization.LineChart(document.getElementById('chart_div2'));
 		        chart2.draw(data2, options);
+		        
+		        
+		        var chart4 = new google.visualization.ColumnChart(document.getElementById('chart_div4'));
+		            chart4.draw(data4, options4);
  			},
  			error : function(e) {
  				alert('Error while Ajax');

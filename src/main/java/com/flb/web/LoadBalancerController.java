@@ -160,6 +160,15 @@ public class LoadBalancerController {
 		}
 
 		mainObject.put("migration", jsonObjectOuter);
+		
+		
+		JSONObject totalAndMigrated=new JSONObject();
+		
+		ServerLoad serverLoad=repository.findServerLoadByServer(server);
+		totalAndMigrated.put("total", serverLoad.getTotalRequestCount());
+		totalAndMigrated.put("migrated", server.getRequestMigrated());
+		mainObject.put("totalAndMigrated", totalAndMigrated);
+		
 		mv.addObject(mainObject);
 		return mv;
 	}
