@@ -21,6 +21,7 @@ public class ClearLoadUtil {
 		
 		for (ServerLoad serverLoad : serverLoads) {
 			serverLoad.setRequestCount(0);
+			serverLoad.setTotalRequestCount(0);
 			session.saveOrUpdate(serverLoad);
 			Server server=serverLoad.getServer();
 			server.setRequestMigrated(0);

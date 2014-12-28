@@ -23,16 +23,16 @@ import com.flb.entity.support.Repository;
 
 @Controller
 public class LoadBalancerController {
-	
+
 	@Resource
 	private DataStoreManager dataStoreManager;
-	
+
 	@Resource
 	private Repository repository;
-	
+
 	@Resource
 	private RequestGenerator requestGenerator;
-	
+
 	@RequestMapping("/admin")
 	public ModelAndView login(HttpSession httpSession){
 		ModelAndView mv=new ModelAndView("admin/index");
@@ -40,42 +40,42 @@ public class LoadBalancerController {
 		mv.addObject("serverLoads", repository.listAllServerLoads());
 		return mv;
 	}
-	
+
 	@RequestMapping("/admin/add-new-server")
 	public ModelAndView showAddNew(HttpSession httpSession){
 		ModelAndView mv=new ModelAndView("admin/add-new-server");
-		
+
 		return mv;
 	}
-	
+
 	@RequestMapping("/admin/edit-server")
 	public ModelAndView showeEditNew(HttpSession httpSession,@RequestParam Long id){
 		ModelAndView mv=new ModelAndView("admin/edit-server");
 		Server server=repository.findServerById(id);
 		mv.addObject("server", server);
-		
+
 		return mv;
 	}
-	
+
 	@RequestMapping("/admin/graphs")
 	public ModelAndView showGraphs(HttpSession httpSession){
 		ModelAndView mv=new ModelAndView("admin/graph");
 		mv.addObject("servers", repository.listAllServer());
 		return mv;
 	}
-	
+
 	@RequestMapping("/admin/add-server")
 	public ModelAndView addNewServer(HttpSession httpSession, @ModelAttribute Server server){
 		ModelAndView mv=new ModelAndView("redirect:/admin");		
 		dataStoreManager.save(server);		
-		
+
 		ServerLoad serverLoad=new ServerLoad();
 		serverLoad.setServer(server);
 		dataStoreManager.save(serverLoad);
-		
+
 		return mv;
 	}
-	
+
 	@RequestMapping("/admin/update-server")
 	public ModelAndView editServer(HttpSession httpSession, @ModelAttribute Server server){
 		ModelAndView mv=new ModelAndView("redirect:/admin");
@@ -88,10 +88,10 @@ public class LoadBalancerController {
 		toUpdateServer.setRequestCapacity(server.getRequestCapacity());
 		toUpdateServer.setStatus(server.getStatus());
 		dataStoreManager.save(toUpdateServer);		
-		
+
 		return mv;
 	}
-	
+
 	@RequestMapping("/notify/request-complete")
 	public ModelAndView notify(HttpSession httpSession, @RequestParam Long id){
 		ModelAndView mv=new ModelAndView("json-string");
@@ -99,21 +99,25 @@ public class LoadBalancerController {
 		jsonObject.put("result", "true");
 		mv.addObject("result", jsonObject);
 
-		
+
 		Server server=repository.findServerById(id);
 		ServerLoad serverLoad=repository.findServerLoadByServer(server);
 		int load=serverLoad.getRequestCount();
-		load--;
+		if(load>0){
+			load--;
+		}else{
+			load=0;
+		}
 		serverLoad.setRequestCount(load);		
 		dataStoreManager.save(serverLoad);
-		
+
 		return mv;
 	}
-	
+
 	@RequestMapping("/graph-data")
 	public ModelAndView getGrapgData(@RequestParam Long id){
 		ModelAndView mv=new ModelAndView("json-string");
-		
+
 		Server server=repository.findServerById(id);
 		JSONObject mainObject=new JSONObject();
 		List<GraphElement> graphElements=repository.listGraphElementByServer(server,true);
@@ -130,7 +134,7 @@ public class LoadBalancerController {
 		mainObject.put("migrationActive", jsonObjectOuter);
 		graphElements=repository.listGraphElementByServer(server,false);
 		i=0;
-		
+
 		jsonObjectOuter=new JSONObject();
 		for (GraphElement graphElement : graphElements) {
 			JSONObject jsonObject=new JSONObject();
@@ -141,10 +145,10 @@ public class LoadBalancerController {
 			i++;
 		}
 		mainObject.put("migrationDeactive", jsonObjectOuter);
-		
-		
+
+
 		List<Server> servers=repository.listAllServer();
-		
+
 		jsonObjectOuter=new JSONObject();
 		i=0;
 		for (Server server2 : servers) {
@@ -154,21 +158,26 @@ public class LoadBalancerController {
 			jsonObjectOuter.put(i,jsonObject);
 			i++;
 		}
-		
+
 		mainObject.put("migration", jsonObjectOuter);
+		
+		
+		JSONObject totalAndMigrated=new JSONObject();
+		
+		ServerLoad serverLoad=repository.findServerLoadByServer(server);
+		totalAndMigrated.put("total", serverLoad.getTotalRequestCount());
+		totalAndMigrated.put("migrated", server.getRequestMigrated());
+		mainObject.put("totalAndMigrated", totalAndMigrated);
+		
 		mv.addObject(mainObject);
 		return mv;
 	}
-	
+
 	@RequestMapping("/create-load")
 	public ModelAndView createLoad() throws IOException, InterruptedException{
-		ModelAndView mv=new ModelAndView("json-string");
-		
-		requestGenerator.main();
-		
-		JSONObject jsonObject=new JSONObject();
-		jsonObject.put("Created", "true");
-		mv.addObject("load", jsonObject);
+		ModelAndView mv=new ModelAndView("admin/create-load");	
+
+
 		return mv;
 	}
 

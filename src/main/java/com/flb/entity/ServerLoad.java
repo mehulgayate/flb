@@ -12,6 +12,7 @@ public class ServerLoad extends EntityBase{
 	
 	private Server server;
 	private Integer requestCount=0;
+	private Integer totalRequestCount=0;
 	
 	@OneToOne(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	public Server getServer() {
@@ -26,5 +27,12 @@ public class ServerLoad extends EntityBase{
 	public void setRequestCount(Integer requestCount) {
 		this.requestCount = requestCount;
 	}
+	public Integer getTotalRequestCount() {
+		return totalRequestCount;
+	}
+	public void setTotalRequestCount(Integer totalRequestCount) {
+		this.totalRequestCount = totalRequestCount;
+	}
+	
 
 }
