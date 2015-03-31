@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.flb.entity.GraphElement;
 import com.flb.entity.Server;
+import com.flb.entity.ServerLog;
 import com.flb.entity.Server.ServerStatus;
 import com.flb.entity.ServerLoad;
 
@@ -64,6 +65,10 @@ public class Repository {
 		return getSession().createQuery("FROM "+GraphElement.class.getName()+" ge where ge.server=:server AND migrationActive=:migrationActive")
 				.setParameter("server", server)
 				.setParameter("migrationActive", migrationStatus).list();
+	}
+	
+	public ServerLog findServerLastLog(){
+		return (ServerLog) getSession().createQuery("FROM "+ServerLog.class.getName()+" osl WHERE osl.id=(select max(isl.id) FROM "+ServerLog.class.getName()+" isl)").uniqueResult();
 	}
 
 }

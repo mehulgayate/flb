@@ -38,6 +38,7 @@ public class LoadBalancerController {
 		ModelAndView mv=new ModelAndView("admin/index");
 		repository.listAllServerLoads();
 		mv.addObject("serverLoads", repository.listAllServerLoads());
+		mv.addObject("serverLog", repository.findServerLastLog());
 		return mv;
 	}
 

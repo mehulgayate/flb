@@ -119,13 +119,21 @@ ddaccordion.init({
 <input type="button" id="bulkRequests" value="Hit Bulk Request"></input>  
      </div><!-- end of right content-->
             
-                    
+  
   </div>   <!--end of center content -->               
-                    
+                                
                     
     
     
     <div class="clear"></div>
+        <br/>
+  <br/>
+  <br/>
+  <div><strong>Server logs: </strong>
+  
+  <br/>
+  ${serverLog.log}
+  </div>  
     </div> <!--end of main content-->
 	
     

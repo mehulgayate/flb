@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.evalua.entity.support.DataStoreManager;
 import com.flb.entity.Server;
 import com.flb.entity.ServerLoad;
+import com.flb.entity.ServerLog;
 import com.flb.entity.support.Repository;
 
 @Controller
@@ -63,7 +64,13 @@ public class FrontApiController {
 		serverLoad.setTotalRequestCount(totalRequestCount);
 		dataStoreManager.save(serverLoad);
 
-		System.out.println("request will be processed by sever id : ***************** "+server.getId());
+		ServerLog serverLog = repository.findServerLastLog();
+		if(serverLog==null){
+			serverLog = new ServerLog();
+		}
+		serverLog.setLog(serverLog.getLog()+"<br/>"+"New request recieved, will be processed by sever id : ***************** "+server.getId()+"\n");
+		dataStoreManager.save(serverLog);
+		System.out.println("New request recieved, will be processed by sever id : ***************** "+server.getId());
 		return "http://"+server.getIp()+":"+server.getPortNumber()+relativeURL+"&id="+server.getId();
 	}
 
@@ -72,6 +79,8 @@ public class FrontApiController {
 		CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
 		try {
 		    // Start the client
+			ServerLog serverLog = repository.findServerLastLog();
+			serverLog.setLog(serverLog.getLog()+"<br/>"+"Making request to back server, url: "+url+" ......\n");
 		    httpclient.start();
 
 		    // Execute request
@@ -79,7 +88,7 @@ public class FrontApiController {
 		    Future<HttpResponse> future = httpclient.execute(request1, null);
 		    // and wait until a response is received
 		    HttpResponse response1 = future.get();
-		    System.out.println(request1.getRequestLine() + "->" + response1.getStatusLine());
+		    serverLog.setLog(serverLog.getLog()+"<br/>"+"Output recived from back server.....\n");
 	
 
 			BufferedReader br = new BufferedReader(
@@ -87,7 +96,9 @@ public class FrontApiController {
 
 			String output;
 
-			System.out.println("Output from Server .... \n");
+						
+			
+			dataStoreManager.save(serverLog);
 			while ((output = br.readLine()) != null) {
 				System.out.println(output);
 				stringBuilder.append(output);
@@ -122,11 +133,13 @@ public class FrontApiController {
 	private String migrateRequest(Long oldServerId,String relativeUrl,Object object) throws IOException{
 		
 		System.out.println("**** #### ***** **** #### ***** **** #### ***** Load migration detected from server : "+oldServerId);
-		
+		ServerLog serverLog = repository.findServerLastLog();
+		serverLog.setLog(serverLog.getLog()+"<br/>"+"**** #### ***** **** #### ***** **** #### ***** Load migration detected from server : "+oldServerId);
 		Server server=repository.findServerById(oldServerId);
 		
 		int requestMig=server.getRequestMigrated();
 		System.out.println("Migrated request numbers "+requestMig);
+		serverLog.setLog(serverLog.getLog()+"<br/>"+"Migrated request numbers "+requestMig);
 		server.setRequestMigrated(++requestMig);
 		dataStoreManager.save(server);
 		
@@ -157,6 +170,7 @@ public class FrontApiController {
 			String output;
 
 			System.out.println("Migration Output from Server for UUIDF : "+relativeUrl);
+			serverLog.setLog(serverLog.getLog()+"<br/>"+"Migration Output from Server for UUIDF : "+relativeUrl);
 			while ((output = br.readLine()) != null) {
 				System.out.println(output);
 				stringBuilder.append(output);
@@ -167,6 +181,7 @@ public class FrontApiController {
 				migrateRequest(olderServerId,relativeUrl,object);
 			}
 
+			dataStoreManager.save(serverLog);
 
 		} catch (ClientProtocolException e) {
 
@@ -190,7 +205,10 @@ public class FrontApiController {
 	
 	private String getNewServerString(String relativeURL,Long oldServerId){
 		List<ServerLoad> serverLoads = repository.listMinLoadServersForMigration(oldServerId);
+		ServerLog serverLog = repository.findServerLastLog();
+		
 		if(serverLoads.isEmpty()){
+			serverLog.setLog(serverLog.getLog()+"<br/>"+"########### ALL SERVERS ARE OVERLOADED .....UNABLE TO SERVE AT CURRENT MOMENT...!!!!!");
 			System.out.println("########### ALL SERVERS ARE OVERLOADED .....UNABLE TO SERVE AT CURRENT MOMENT...!!!!!");
 			return "false";
 		}
@@ -205,6 +223,7 @@ public class FrontApiController {
 		dataStoreManager.save(serverLoad);
 
 		System.out.println("Sever id: "+oldServerId+" has migrated request to server ID: ***************** "+server.getId());
+		serverLog.setLog(serverLog.getLog()+"<br/>"+"Sever id: "+oldServerId+" has migrated request to server ID: ***************** "+server.getId());
 		return "http://"+server.getIp()+":"+server.getPortNumber()+relativeURL+"&id="+server.getId();
 	}
 }
