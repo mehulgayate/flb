@@ -32,10 +32,37 @@ public class LoadBalancerController {
 
 	@Resource
 	private RequestGenerator requestGenerator;
+	
+	
+	@RequestMapping("/admin/login")
+	public ModelAndView showLogin(HttpSession httpSession){
+		ModelAndView mv=new ModelAndView("admin/login");
+		
+		return mv;
+	}
+	
+
+	@RequestMapping("/admin/authenticate")
+	public ModelAndView authenticate(HttpSession httpSession,@RequestParam String email, @RequestParam String password){
+		ModelAndView mv=new ModelAndView("redirect:/admin/");
+		
+		if(email.equals("admin") && password.equals("1234")){
+			httpSession.setAttribute("userAdmin", "userAdmin");
+		}else{
+			return new ModelAndView("redirect:/admin/login");
+		}
+		
+		return mv;
+	}
 
 	@RequestMapping("/admin")
 	public ModelAndView login(HttpSession httpSession){
 		ModelAndView mv=new ModelAndView("admin/index");
+		
+		String user = (String) httpSession.getAttribute("userAdmin");
+		if(user == null || !user.equals("userAdmin")){
+			return new ModelAndView("redirect:/admin/login");
+		}
 		repository.listAllServerLoads();
 		mv.addObject("serverLoads", repository.listAllServerLoads());
 		mv.addObject("serverLog", repository.findServerLastLog());
@@ -45,12 +72,19 @@ public class LoadBalancerController {
 	@RequestMapping("/admin/add-new-server")
 	public ModelAndView showAddNew(HttpSession httpSession){
 		ModelAndView mv=new ModelAndView("admin/add-new-server");
-
+		String user = (String) httpSession.getAttribute("userAdmin");
+		if(user == null || !user.equals("userAdmin")){
+			return new ModelAndView("redirect:/admin/login");
+		}
 		return mv;
 	}
 
 	@RequestMapping("/admin/edit-server")
 	public ModelAndView showeEditNew(HttpSession httpSession,@RequestParam Long id){
+		String user = (String) httpSession.getAttribute("userAdmin");
+		if(user == null || !user.equals("userAdmin")){
+			return new ModelAndView("redirect:/admin/login");
+		}
 		ModelAndView mv=new ModelAndView("admin/edit-server");
 		Server server=repository.findServerById(id);
 		mv.addObject("server", server);
