@@ -207,11 +207,11 @@ public class FrontApiController {
 		List<ServerLoad> serverLoads = repository.listMinLoadServersForMigration(oldServerId);
 		ServerLog serverLog = repository.findServerLastLog();
 		
-		if(serverLoads.isEmpty()){
+		/*if(serverLoads.isEmpty()){
 			serverLog.setLog(serverLog.getLog()+"<br/>"+"########### ALL SERVERS ARE OVERLOADED .....UNABLE TO SERVE AT CURRENT MOMENT...!!!!!");
 			System.out.println("########### ALL SERVERS ARE OVERLOADED .....UNABLE TO SERVE AT CURRENT MOMENT...!!!!!");
 			return "false";
-		}
+		}*/
 		ServerLoad serverLoad=serverLoads.get(0);
 		Server server=serverLoad.getServer();
 		int requestCount=serverLoad.getRequestCount();

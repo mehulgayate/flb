@@ -92,4 +92,9 @@
 	        <value>${app.request.delay}</value>
 	     </property>   
 	</bean>
+	<bean id="bufferedThreadSchedular" class="com.flb.demon.BuffredThredQueueDemon" init-method="init">
+	    <constructor-arg ref="sessionFactory" />		  
+	    <constructor-arg><value>${app.delay}</value></constructor-arg>
+	    <constructor-arg><value>60000</value></constructor-arg>
+	</bean>
 </beans>

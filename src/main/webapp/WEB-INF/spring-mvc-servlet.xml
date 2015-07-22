@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
- xmlns:context="http://www.springframework.org/schema/context"
- xsi:schemaLocation="http://www.springframework.org/schema/beans
- http://www.springframework.org/schema/beans/spring-beans.xsd
- http://www.springframework.org/schema/context
- http://www.springframework.org/schema/context/spring-context.xsd ">
- 
+        xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd "> 
  
  <!-- Tells Spring MVC to keep hibernate sessions open until web requests are complete, thereby enabling use of hibernate lazy loading -->
 <bean name="openSessionInViewInterceptor"
@@ -26,6 +27,45 @@
         </list>
     </property>
 </bean>
+
+<mvc:interceptors>
+                <bean class="com.flb.web.interceptor.DetectionInterceptor">
+                        <property name="ignoreAuthenticationActions">
+                                <list>
+                                        <value>/admin</value>
+                                         <value>/</value>
+                                        <value>/admin-login</value>
+                                        <value>/admin/delete-user</value>
+                                        <value>/register</value>
+                                        <value>/register/add</value>  
+                                        <value>/user/login</value>    
+                                        <value>/invoke-service</value>  
+                                        <value>/blocked-users</value>    
+                                        <value>/admin/activate-monitor</value>  
+                                        <value>/admin/activate-user</value>  
+                                        <value>/logout</value> 
+                                        <value>/admin/login</value>
+                                        <value>/admin/authenticate</value>
+                                        <value>/admin/add-new-server</value>
+                                        <value>/admin/edit-server</value>
+                                        <value>/admin/graphs</value>
+                                        <value>/admin/add-server</value>
+                                        <value>/admin/update-server</value>
+                                        <value>/notify/request-complete</value>
+                                        <value>/graph-data</value>
+                                        <value>/create-load</value> 
+                                                    
+                                                                                                              
+                                </list>
+                         </property>
+                </bean>
+
+                <bean
+                        class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
+                        <property name="sessionFactory" ref="sessionFactory" />
+                </bean>
+        </mvc:interceptors>
+
 <bean id="freemarkerConfig"
  class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
     

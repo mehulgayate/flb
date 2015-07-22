@@ -48,6 +48,12 @@ public class Repository {
 				.setParameter("serverId", oldServerId).list();
 	}
 	
+	public List<Server> listUnderLoadedServers(){		
+		return getSession().createQuery("select sl.server From "+ServerLoad.class.getName()+" sl where sl.requestCount<sl.server.requestCapacity AND sl.server.status=:status")
+				.setParameter("status", ServerStatus.ACTIVE)
+				.list();
+	}
+	
 	public ServerLoad findServerLoadByServer(Server server) {
 		return (ServerLoad) getSession()
 				.createQuery(
